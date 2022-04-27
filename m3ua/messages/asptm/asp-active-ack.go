@@ -3,6 +3,7 @@ package asptm
 import (
 	"go-sigtran/m3ua/messages"
 	"go-sigtran/m3ua/parameters"
+	"go-sigtran/m3ua/parameters/factory"
 )
 
 type AspActiveAck struct {
@@ -43,7 +44,7 @@ func (a *AspActiveAck) EncodeMessage() []byte {
 
 func (a *AspActiveAck) DecodeMessage(b []byte) {
 	if len(b) > 0 {
-		params := parameters.DecodeParameters(b)
+		params := factory.DecodeParameters(b)
 		for idx := 0; idx < len(params); idx++ {
 			param := params[idx]
 			switch param.GetHeader().Tag {

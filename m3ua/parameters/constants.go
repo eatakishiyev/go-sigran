@@ -33,3 +33,15 @@ const (
 	TrafficModeLoadShare
 	TrafficModeBroadcast
 )
+
+const (
+	SiSccp                   = 3
+	SiTup                    = 4
+	SiIsup                   = 5
+	SiBroadbandIsup          = 9
+	SiStelliteIsup           = 10
+	SiAllType2Signalling     = 12
+	SiBicc                   = 13
+	SiGatewayControlProtocol = 14
+	SiUnknown                = 1
+)

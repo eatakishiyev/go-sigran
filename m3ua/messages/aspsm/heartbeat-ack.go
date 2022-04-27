@@ -3,6 +3,7 @@ package aspsm
 import (
 	"go-sigtran/m3ua/messages"
 	"go-sigtran/m3ua/parameters"
+	"go-sigtran/m3ua/parameters/factory"
 )
 
 type HeartbeatAck struct {
@@ -20,7 +21,7 @@ func (h *HeartbeatAck) EncodeMessage() []byte {
 
 func (h *HeartbeatAck) DecodeMessage(b []byte) {
 	if len(b) > 0 {
-		params := parameters.DecodeParameters(b)
+		params := factory.DecodeParameters(b)
 		for idx := 0; idx < len(params); idx++ {
 			p := params[idx]
 			switch p.GetHeader().Tag {
