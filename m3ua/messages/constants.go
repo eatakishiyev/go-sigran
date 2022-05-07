@@ -1,58 +1,62 @@
 package messages
 
+type MessageClass int
+
 const (
-	MessageClassMgmt = iota
-	MessageClassTransferMessage
-	MessageClassSsnm
-	MessageClassAspsm
-	MessageClassAsptm
-	MessageClassRkm = 9
+	Mgmt MessageClass = iota
+	TransferMessage
+	Ssnm
+	Aspsm
+	Asptm
+	Rkm = 9
 )
 
 //Management Messages
+type MessageType int
+
 const (
-	MessageTypeErr = iota
-	MessageTypeNtfy
+	Err MessageType = iota
+	Ntfy
 )
 
 //Transfer Messages
 const (
-	MessageTypeReserved = iota
-	MessageTypeData
+	Reserved MessageType = iota
+	Data
 )
 
 //SSNM Messages
 const (
-	MessageTypeDuna = iota + 1
-	MessageTypeDava
-	MessageTypeDaud
-	MessageTypeScon
-	MessageTypeDupu
-	MessageTypeDrst
+	Duna MessageType = iota + 1
+	Dava
+	Daud
+	Scon
+	Dupu
+	Drst
 )
 
 //ASPSM Messages
 const (
-	MessageTypeAspUp = iota + 1
-	MessageTypeAspDn
-	MessageTypeBeat
-	MessageTypeAspUpAck
-	MessageTypeAspDnAck
-	MessageTypeBeatAck
+	AspUp MessageType = iota + 1
+	AspDn
+	Beat
+	AspUpAck
+	AspDnAck
+	BeatAck
 )
 
 //ASPTM Messages
 const (
-	MessageTypeAspAc = iota + 1
-	MessageTypeAspIa
-	MessageTypeAspAcAck
-	MessageTypeAspIaAck
+	AspAc MessageType = iota + 1
+	AspIa
+	AspAcAck
+	AspIaAck
 )
 
 //RKM Messages
 const (
-	MessageTypeRegReq = iota + 1
-	MessageTypeRegRsp
-	MessageTypeDeregReq
-	MessageTypeDeregRsp
+	RegReq MessageType = iota + 1
+	RegRsp
+	DeregReq
+	DeregRsp
 )

@@ -16,8 +16,8 @@ type DestinationStateAudit struct {
 func NewDestinationStateAudit(networkAppearance *parameters.NetworkAppearance, affectedPointCode *parameters.AffectedPointCode, infoString *parameters.InfoString) *DestinationStateAudit {
 	return &DestinationStateAudit{
 		MessageHeader: &messages.MessageHeader{
-			MessageClass: messages.MessageClassSsnm,
-			MessageType:  messages.MessageTypeDaud,
+			MessageClass: messages.Ssnm,
+			MessageType:  messages.Daud,
 		},
 		NetworkAppearance: networkAppearance,
 		AffectedPointCode: affectedPointCode,

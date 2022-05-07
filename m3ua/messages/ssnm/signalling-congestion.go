@@ -80,8 +80,8 @@ func NewSignallingCongestion(networkAppearance *parameters.NetworkAppearance, ro
 	congestionIndication *parameters.CongestionIndication, infoString *parameters.InfoString) *SignallingCongestion {
 	return &SignallingCongestion{
 		MessageHeader: &messages.MessageHeader{
-			MessageClass: messages.MessageClassSsnm,
-			MessageType:  messages.MessageTypeScon,
+			MessageClass: messages.Ssnm,
+			MessageType:  messages.Scon,
 		},
 		NetworkAppearance:    networkAppearance,
 		RoutingContext:       routingContext,

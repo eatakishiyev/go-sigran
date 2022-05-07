@@ -38,7 +38,7 @@ func (as *As) AddAsp(asp *Asp) {
 func (as *As) Send(payload transfer.PayloadData) {
 	err := as.fsm.Event("payload")
 	if err != nil {
-		fmt.Printf("error occurred during sending payload ")
+		fmt.Printf("Cannot send payload: %s", err)
 		return
 	}
 
@@ -49,6 +49,11 @@ func (as *As) Send(payload transfer.PayloadData) {
 	if as.RoutingContext != nil {
 		payload.RoutingContext = as.RoutingContext
 	}
+
+	var aspIndex = int(payload.ProtocolData.Sls & 0x7F)
+	aspIndex = aspIndex % len(as.Asps)
+
+	//var asp = as.Asps[aspIndex]
 
 	//TODO implement payload sending
 }

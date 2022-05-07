@@ -14,7 +14,7 @@ type AspUp struct {
 
 func NewAspUp(aspId *parameters.AspIdentifier, infoString *parameters.InfoString) *AspUp {
 	a := &AspUp{
-		MessageHeader: messages.NewHeader(messages.MessageClassAspsm, messages.MessageTypeAspUp),
+		MessageHeader: messages.NewHeader(messages.Aspsm, messages.AspUp),
 		InfoString:    infoString,
 		AspIdentifier: aspId,
 	}

@@ -66,8 +66,8 @@ func (d *DestinationUserPartUnavailable) SetHeader(header *messages.MessageHeade
 func NewDestinationUserPartUnavailable(networkAppearance *parameters.NetworkAppearance, affectedPointCode *parameters.AffectedPointCode, userPartUnavailableCause *parameters.UserPartUnavailableCause, infoString *parameters.InfoString) *DestinationUserPartUnavailable {
 	return &DestinationUserPartUnavailable{
 		MessageHeader: &messages.MessageHeader{
-			MessageClass: messages.MessageClassSsnm,
-			MessageType:  messages.MessageTypeDupu,
+			MessageClass: messages.Ssnm,
+			MessageType:  messages.Dupu,
 		},
 		NetworkAppearance:        networkAppearance,
 		AffectedPointCode:        affectedPointCode,

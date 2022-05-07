@@ -17,8 +17,8 @@ type Error struct {
 func NewError(routingContext *parameters.RoutingContext, affectedPointCode *parameters.AffectedPointCode, networkAppearance *parameters.NetworkAppearance, diagnosticInformation *parameters.DiagnosticInformation) *Error {
 	return &Error{
 		MessageHeader: &messages.MessageHeader{
-			MessageClass: messages.MessageClassMgmt,
-			MessageType:  messages.MessageTypeErr,
+			MessageClass: messages.Mgmt,
+			MessageType:  messages.Err,
 		},
 		RoutingContext:        routingContext,
 		AffectedPointCode:     affectedPointCode,

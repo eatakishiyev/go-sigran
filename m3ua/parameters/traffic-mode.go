@@ -4,10 +4,10 @@ import "encoding/binary"
 
 type TrafficMode struct {
 	*ParameterHeader
-	Mode uint32
+	Mode Mode
 }
 
-func NewTrafficMode(mode uint32) *TrafficMode {
+func NewTrafficMode(mode Mode) *TrafficMode {
 	return &TrafficMode{
 		ParameterHeader: &ParameterHeader{
 			Tag: ParamTrafficMode,
@@ -18,12 +18,12 @@ func NewTrafficMode(mode uint32) *TrafficMode {
 
 func (t *TrafficMode) EncodeParameter() []byte {
 	var encoded []byte
-	binary.BigEndian.PutUint32(encoded, t.Mode)
+	binary.BigEndian.PutUint32(encoded, uint32(t.Mode))
 	return encoded
 }
 
 func (t *TrafficMode) DecodeParameter(p []byte) {
-	t.Mode = binary.BigEndian.Uint32(p)
+	t.Mode = Mode(binary.BigEndian.Uint32(p))
 }
 
 func (t *TrafficMode) GetHeader() *ParameterHeader {

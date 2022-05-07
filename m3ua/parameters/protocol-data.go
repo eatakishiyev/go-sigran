@@ -8,17 +8,17 @@ type ProtocolData struct {
 	Opc              uint32
 	Dpc              uint32
 	Sls              byte
-	Ni               byte
+	Ni               NetworkIndicator
 	Mp               byte
-	Si               byte
+	Si               ServiceIndicator
 }
 
 func (pd *ProtocolData) EncodeParameter() []byte {
 	var encoded []byte
 	binary.BigEndian.PutUint32(encoded, pd.Opc)
 	binary.BigEndian.PutUint32(encoded, pd.Dpc)
-	encoded = append(encoded, pd.Si)
-	encoded = append(encoded, pd.Ni)
+	encoded = append(encoded, byte(pd.Si))
+	encoded = append(encoded, byte(pd.Ni))
 	encoded = append(encoded, pd.Mp)
 	encoded = append(encoded, pd.Sls)
 	encoded = append(encoded, pd.UserProtocolData...)
@@ -28,8 +28,8 @@ func (pd *ProtocolData) EncodeParameter() []byte {
 func (pd *ProtocolData) DecodeParameter(p []byte) {
 	pd.Opc = binary.BigEndian.Uint32(p[0:4])
 	pd.Dpc = binary.BigEndian.Uint32(p[4:8])
-	pd.Si = p[8]
-	pd.Ni = p[9]
+	pd.Si = ServiceIndicator(p[8])
+	pd.Ni = NetworkIndicator(p[9])
 	pd.Mp = p[10]
 	pd.Sls = p[11]
 	pd.UserProtocolData = p[12:]
@@ -43,7 +43,7 @@ func (pd *ProtocolData) SetHeader(header *ParameterHeader) {
 	pd.ParameterHeader = header
 }
 
-func NewProtocolData(userProtocolData []byte, opc uint32, dpc uint32, sls byte, ni byte, mp byte, si byte) *ProtocolData {
+func NewProtocolData(userProtocolData []byte, opc uint32, dpc uint32, sls byte, ni NetworkIndicator, mp byte, si ServiceIndicator) *ProtocolData {
 	return &ProtocolData{
 		ParameterHeader: &ParameterHeader{
 			Tag: ParamProtocolData,

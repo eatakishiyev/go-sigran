@@ -15,8 +15,8 @@ type AspInactiveAck struct {
 func NewAspInactiveAck(routingContext *parameters.RoutingContext, infoString *parameters.InfoString) *AspInactiveAck {
 	return &AspInactiveAck{
 		MessageHeader: &messages.MessageHeader{
-			MessageType:  messages.MessageTypeAspIaAck,
-			MessageClass: messages.MessageClassAsptm,
+			MessageType:  messages.AspIaAck,
+			MessageClass: messages.Asptm,
 		},
 		RoutingContext: routingContext,
 		InfoString:     infoString,

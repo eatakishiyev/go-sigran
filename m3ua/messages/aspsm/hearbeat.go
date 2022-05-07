@@ -13,7 +13,7 @@ type Heartbeat struct {
 
 func NewHeartbeat(data *parameters.HeartbeatData) *Heartbeat {
 	return &Heartbeat{
-		MessageHeader: messages.NewHeader(messages.MessageClassAspsm, messages.MessageTypeBeat),
+		MessageHeader: messages.NewHeader(messages.Aspsm, messages.Beat),
 		HeartbeatData: data,
 	}
 }

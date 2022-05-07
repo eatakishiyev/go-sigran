@@ -12,7 +12,7 @@ type AspDownAck struct {
 
 func NewAspDownAck(infoString *parameters.InfoString) *AspDownAck {
 	return &AspDownAck{
-		MessageHeader: messages.NewHeader(messages.MessageClassAspsm, messages.MessageTypeAspDnAck),
+		MessageHeader: messages.NewHeader(messages.Aspsm, messages.AspDnAck),
 		infoString:    infoString,
 	}
 }

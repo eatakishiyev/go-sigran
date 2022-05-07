@@ -16,8 +16,8 @@ type DestinationAvailable struct {
 func NewDestinationAvailable(networkAppearance *parameters.NetworkAppearance, affectedPointCode *parameters.AffectedPointCode, infoString *parameters.InfoString) *DestinationAvailable {
 	return &DestinationAvailable{
 		MessageHeader: &messages.MessageHeader{
-			MessageClass: messages.MessageClassSsnm,
-			MessageType:  messages.MessageTypeDava,
+			MessageClass: messages.Ssnm,
+			MessageType:  messages.Dava,
 		},
 		NetworkAppearance: networkAppearance,
 		AffectedPointCode: affectedPointCode,

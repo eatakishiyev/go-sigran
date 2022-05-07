@@ -42,7 +42,7 @@ func (h *HeartbeatAck) SetHeader(header *messages.MessageHeader) {
 
 func NewHeartbeatAck(heartbeatData *parameters.HeartbeatData) *HeartbeatAck {
 	return &HeartbeatAck{
-		MessageHeader: messages.NewHeader(messages.MessageClassAspsm, messages.MessageTypeBeatAck),
+		MessageHeader: messages.NewHeader(messages.Aspsm, messages.BeatAck),
 		HeartbeatData: heartbeatData,
 	}
 }

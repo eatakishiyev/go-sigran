@@ -16,8 +16,8 @@ type AspActiveAck struct {
 func NewAspActiveAck(trafficMode *parameters.TrafficMode, routingContext *parameters.RoutingContext, infoString *parameters.InfoString) *AspActiveAck {
 	return &AspActiveAck{
 		MessageHeader: &messages.MessageHeader{
-			MessageClass: messages.MessageClassAsptm,
-			MessageType:  messages.MessageTypeAspAcAck,
+			MessageClass: messages.Asptm,
+			MessageType:  messages.AspAcAck,
 		},
 		TrafficMode:    trafficMode,
 		RoutingContext: routingContext,

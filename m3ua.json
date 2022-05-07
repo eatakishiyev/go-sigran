@@ -1,0 +1,7 @@
+{
+  "as-select-mask": 128,
+  "asp-select-mask": 127,
+  "max-as-count-for-routing": 2,
+  "max-sls": 255,
+  "delay-between-initiation-messages": 2
+}

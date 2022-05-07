@@ -16,8 +16,8 @@ type DestinationRestricted struct {
 func NewDestinationRestricted(routingContext *parameters.RoutingContext, affectedPointCode *parameters.AffectedPointCode, infoString *parameters.InfoString) *DestinationRestricted {
 	return &DestinationRestricted{
 		MessageHeader: &messages.MessageHeader{
-			MessageClass: messages.MessageClassSsnm,
-			MessageType:  messages.MessageTypeDrst,
+			MessageClass: messages.Ssnm,
+			MessageType:  messages.Drst,
 		},
 		RoutingContext:    routingContext,
 		AffectedPointCode: affectedPointCode,

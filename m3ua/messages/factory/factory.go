@@ -17,41 +17,41 @@ func CreateMessage(r *bytes.Reader) *messages.Message {
 	var m messages.Message
 
 	switch header.MessageClass {
-	case messages.MessageClassAspsm:
+	case messages.Aspsm:
 		switch header.MessageType {
-		case messages.MessageTypeAspDn:
+		case messages.AspDn:
 			m = &aspsm.AspDown{}
-		case messages.MessageTypeAspDnAck:
+		case messages.AspDnAck:
 			m = &aspsm.AspDownAck{}
-		case messages.MessageTypeAspUp:
+		case messages.AspUp:
 			m = &aspsm.AspUp{}
-		case messages.MessageTypeAspUpAck:
+		case messages.AspUpAck:
 			m = &aspsm.AspUpAck{}
-		case messages.MessageTypeBeat:
+		case messages.Beat:
 			m = &aspsm.Heartbeat{}
-		case messages.MessageTypeBeatAck:
+		case messages.BeatAck:
 			m = &aspsm.HeartbeatAck{}
 		}
-	case messages.MessageClassAsptm:
+	case messages.Asptm:
 		switch header.MessageType {
-		case messages.MessageTypeAspAc:
+		case messages.AspAc:
 			m = &asptm.AspActive{}
-		case messages.MessageTypeAspAcAck:
+		case messages.AspAcAck:
 			m = &asptm.AspActiveAck{}
-		case messages.MessageTypeAspIa:
+		case messages.AspIa:
 			m = &asptm.AspInactive{}
-		case messages.MessageTypeAspIaAck:
+		case messages.AspIaAck:
 			m = &asptm.AspInactiveAck{}
 		}
-	case messages.MessageClassMgmt:
+	case messages.Mgmt:
 		switch header.MessageType {
-		case messages.MessageTypeErr:
+		case messages.Err:
 			m = &mgmt.Error{}
 		}
 
-	case messages.MessageClassTransferMessage:
+	case messages.TransferMessage:
 		switch header.MessageType {
-		case messages.MessageTypeData:
+		case messages.Data:
 			m = &transfer.PayloadData{}
 		}
 	}

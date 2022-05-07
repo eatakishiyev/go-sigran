@@ -16,8 +16,8 @@ type AspActive struct {
 func NewAspActive(trafficMode *parameters.TrafficMode, routingContext *parameters.RoutingContext, infoString *parameters.InfoString) *AspActive {
 	return &AspActive{
 		MessageHeader: &messages.MessageHeader{
-			MessageType:  messages.MessageTypeAspAc,
-			MessageClass: messages.MessageClassAsptm,
+			MessageType:  messages.AspAc,
+			MessageClass: messages.Asptm,
 		},
 		TrafficMode:    trafficMode,
 		RoutingContext: routingContext,

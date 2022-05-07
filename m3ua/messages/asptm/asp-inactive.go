@@ -15,8 +15,8 @@ type AspInactive struct {
 func NewAspInactive(routingContext *parameters.RoutingContext, infoString *parameters.InfoString) *AspInactive {
 	return &AspInactive{
 		MessageHeader: &messages.MessageHeader{
-			MessageClass: messages.MessageClassAsptm,
-			MessageType:  messages.MessageTypeAspIa,
+			MessageClass: messages.Asptm,
+			MessageType:  messages.AspIa,
 		},
 		RoutingContext: routingContext,
 		InfoString:     infoString,

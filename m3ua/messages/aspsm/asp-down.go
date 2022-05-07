@@ -12,7 +12,7 @@ type AspDown struct {
 
 func NewAspDown(infoString *parameters.InfoString) *AspDown {
 	return &AspDown{
-		MessageHeader: messages.NewHeader(messages.MessageClassAspsm, messages.MessageTypeAspDn),
+		MessageHeader: messages.NewHeader(messages.Aspsm, messages.AspDn),
 		infoString:    infoString,
 	}
 }

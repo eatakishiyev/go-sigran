@@ -6,11 +6,11 @@ import (
 )
 
 type MessageHeader struct {
-	Version       byte   // 1 byte
-	Reserved      byte   // 1 byte
-	MessageClass  byte   // 1 byte
-	MessageType   byte   // 1 byte
-	MessageLength uint32 // 4 byte
+	Version       byte         // 1 byte
+	Reserved      byte         // 1 byte
+	MessageClass  MessageClass // 1 byte
+	MessageType   MessageType  // 1 byte
+	MessageLength uint32       // 4 byte
 }
 
 type Message interface {
@@ -20,7 +20,7 @@ type Message interface {
 	SetHeader(header *MessageHeader)
 }
 
-func NewHeader(messageClass byte, messageType byte) *MessageHeader {
+func NewHeader(messageClass MessageClass, messageType MessageType) *MessageHeader {
 	return &MessageHeader{
 		Version:       1,
 		Reserved:      0,
@@ -32,14 +32,16 @@ func NewHeader(messageClass byte, messageType byte) *MessageHeader {
 
 func EncodeMessage(m Message) []byte {
 	var encoded []byte
+
 	encoded = append(encoded, m.GetHeader().Version)
 	encoded = append(encoded, m.GetHeader().Reserved)
-	encoded = append(encoded, m.GetHeader().MessageClass)
-	encoded = append(encoded, m.GetHeader().MessageType)
+	encoded = append(encoded, byte(m.GetHeader().MessageClass))
+	encoded = append(encoded, byte(m.GetHeader().MessageType))
 	encodedMessage := m.EncodeMessage()
 	messageLength := len(encodedMessage) + 8 // version(1 byte) + reserved(1 byte) + class(1 byte) + type(1 byte) + length(4 byte)
 	binary.BigEndian.PutUint32(encoded, uint32(messageLength))
 	encoded = append(encoded, encodedMessage...)
+
 	return encoded
 }
 
@@ -53,7 +55,7 @@ func DecodeHeader(r *bytes.Reader) *MessageHeader {
 	r.Read(remainingBytes)
 	length := binary.BigEndian.Uint32(remainingBytes)
 
-	header := NewHeader(messageClass, messageType)
+	header := NewHeader(MessageClass(messageClass), MessageType(messageType))
 	header.MessageLength = length
 	return header
 }

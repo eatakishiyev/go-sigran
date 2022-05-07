@@ -17,8 +17,8 @@ type DestinationUnavailable struct {
 func NewDestinationUnavailable(networkAppearance *parameters.NetworkAppearance, routingContext *parameters.RoutingContext, affectedPointCode *parameters.AffectedPointCode, infoString *parameters.InfoString) *DestinationUnavailable {
 	return &DestinationUnavailable{
 		MessageHeader: &messages.MessageHeader{
-			MessageClass: messages.MessageClassSsnm,
-			MessageType:  messages.MessageTypeDuna,
+			MessageClass: messages.Ssnm,
+			MessageType:  messages.Duna,
 		},
 		NetworkAppearance: networkAppearance,
 		RoutingContext:    routingContext,

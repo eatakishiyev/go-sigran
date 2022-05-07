@@ -14,7 +14,7 @@ type AspUpAck struct {
 
 func NewAspUpAck(infoString *parameters.InfoString, identifier *parameters.AspIdentifier) *AspUpAck {
 	a := &AspUpAck{
-		MessageHeader: messages.NewHeader(messages.MessageClassAspsm, messages.MessageTypeAspUpAck),
+		MessageHeader: messages.NewHeader(messages.Aspsm, messages.AspUpAck),
 		InfoString:    infoString,
 		AspIdentifier: identifier,
 	}
