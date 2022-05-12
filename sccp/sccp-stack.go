@@ -1,5 +1,7 @@
 package sccp
 
+import "go-sigtran/sccp/parameters"
+
 type MessageHandling uint
 
 const (
@@ -28,7 +30,7 @@ const (
 )
 
 type SccpUser interface {
-	OnMessage(calledParty SccpAddress, callingParty SccpAddress, userData []byte, sequenceControl bool, sequenceNumber uint,
+	OnMessage(calledParty *parameters.SccpAddress, callingParty *parameters.SccpAddress, userData []byte, sequenceControl bool, sequenceNumber uint,
 		messageHandling MessageHandling)
-	OnNotice(calledParty SccpAddress, callingParty SccpAddress, userData []byte, errorReason ErrorReason, importance uint)
+	OnNotice(calledParty *parameters.SccpAddress, callingParty *parameters.SccpAddress, userData []byte, errorReason ErrorReason, importance uint)
 }

@@ -1,13 +1,9 @@
 package parameters
 
 import (
-	"encoding/asn1"
+	asn12 "github.com/PromonLogicalis/asn1"
 )
 
 type ApplicationContext struct {
-	Oid asn1.ObjectIdentifier
-}
-
-func (a *ApplicationContext) Decode(data []byte) ([]byte, error) {
-	return asn1.Unmarshal(data, a)
+	Oid asn12.Oid `asn1:"tag:6,universal"`
 }

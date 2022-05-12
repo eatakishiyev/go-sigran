@@ -1,8 +1,9 @@
 module go-sigtran
 
-go 1.17
+go 1.18
 
 require (
+	github.com/PromonLogicalis/asn1 v0.0.0-20190312173541-d60463189a56
 	github.com/ishidawataru/sctp v0.0.0-20210707070123-9a39160e9062
 	github.com/looplab/fsm v0.3.0
 	github.com/spf13/viper v1.11.0

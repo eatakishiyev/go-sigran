@@ -4,22 +4,49 @@ import (
 	"encoding/hex"
 	"fmt"
 	"go-sigtran/m3ua"
+	"go-sigtran/sccp"
 	"go-sigtran/tcap"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
+
+type Queue struct {
+	q []int
+}
+
+func (q *Queue) Dequeue() int {
+	var e = q.q[0]
+	q.q = q.q[1:]
+	return e
+}
+
+func (q *Queue) Enqueue(e int) {
+	q.q = append(q.q, e)
+}
 
 func main() {
 
-	var tcapMessageData = "6281a6480403fb41066b1a2818060700118605010101a00d600ba1090607040000010032016c8181a17f0201010201003077800200c98308041399549513798885010a8a080413995405001012bb0580038090a39c01029f320804007210661068f2bf3417020100810791995405001012a309800704f020060cd554bf35038301119f360513984a3a229f3707919954050010129f3807919954255179829f39080222308241034223"
+	queue := Queue{
+		q: []int{1, 2, 3},
+	}
+	dequeue := queue.Dequeue()
+	fmt.Printf("dequeued %d\n", dequeue)
+
+	dequeue = queue.Dequeue()
+	fmt.Printf("dequeued %d\n", dequeue)
+
+	var tcapMessageData = "671a49049b1391926b122810060700118605010101a0056403800100"
 
 	data, err := hex.DecodeString(tcapMessageData)
 	if err != nil {
 		fmt.Printf("error occurred while decode hex-string %s", err)
 	}
 
-	tcap.TcapMessageFactory{}.DecodeTCAPMessage(data)
+	tcapStack := tcap.NewTcapStack("TestTcapStack", 1, 10, time.Duration(10)*time.Second)
+
+	tcapStack.OnMessage(nil, nil, data, true, 1, sccp.ReturnMessageOnError)
 
 	asp := &m3ua.Asp{
 		BindPort: 2905,

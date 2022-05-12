@@ -1,4 +1,4 @@
-package sccp
+package parameters
 
 type SubSystemNumber uint
 
