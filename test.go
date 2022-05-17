@@ -1,11 +1,14 @@
 package main
 
 import (
+	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"github.com/PromonLogicalis/asn1"
 	"go-sigtran/m3ua"
 	"go-sigtran/sccp"
 	"go-sigtran/tcap"
+	tcap_parameters "go-sigtran/tcap/parameters"
 	"os"
 	"os/signal"
 	"syscall"
@@ -26,18 +29,38 @@ func (q *Queue) Enqueue(e int) {
 	q.q = append(q.q, e)
 }
 
-func main() {
+func testEncodeDialogPortion() {
 
-	queue := Queue{
-		q: []int{1, 2, 3},
+	var h, _ = hex.DecodeString("9b139192")
+	var dialogId = binary.BigEndian.Uint64(h)
+
+	abortPdu := tcap_parameters.DialogAbortPDU{
+		AbortSource: tcap_parameters.DialogServiceProvider,
 	}
-	dequeue := queue.Dequeue()
-	fmt.Printf("dequeued %d\n", dequeue)
 
-	dequeue = queue.Dequeue()
-	fmt.Printf("dequeued %d\n", dequeue)
+	dialogPortion := tcap_parameters.DialogPortion{
+		DialogPDU: abortPdu,
+	}
+	var b = dialogPortion.Encode()
+	fmt.Printf("encoded dialog-portion %x\n", b)
 
-	var tcapMessageData = "671a49049b1391926b122810060700118605010101a0056403800100"
+	var abortMessage = tcap.AbortMessage{
+		DestinationTransactionId: int(dialogId),
+	}
+
+	var abortData, err = asn1.EncodeWithOptions(abortMessage, "tag:7,application")
+	if err != nil {
+		fmt.Printf("error occurred during encode abort message %s", err)
+	} else {
+		fmt.Printf("abort message data %x", abortData)
+	}
+
+}
+
+func main() {
+	testEncodeDialogPortion()
+
+	var tcapMessageData = "4b10280e060700118605010101a003800101"
 
 	data, err := hex.DecodeString(tcapMessageData)
 	if err != nil {

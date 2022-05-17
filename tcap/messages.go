@@ -44,34 +44,34 @@ type AbortMessage struct {
 	UAbortCause              asn1.RawValue `asn1:"tag:11,application,optional,explicit"`
 }
 
-func (b *BeginMessage) DecodeMessage(data []byte) ([]byte, error) {
+func (b BeginMessage) DecodeMessage(data []byte) ([]byte, error) {
 	return asn1.UnmarshalWithParams(data, b, "tag:2,application")
 }
 
-func (b *BeginMessage) GetMessageType() MessageType {
+func (b BeginMessage) GetMessageType() MessageType {
 	return Begin
 }
 
-func (c *ContinueMessage) DecodeMessage(data []byte) ([]byte, error) {
+func (c ContinueMessage) DecodeMessage(data []byte) ([]byte, error) {
 	return asn1.UnmarshalWithParams(data, c, "tag:5,application")
 }
 
-func (c *ContinueMessage) GetMessageType() MessageType {
+func (c ContinueMessage) GetMessageType() MessageType {
 	return Continue
 }
 
-func (e *EndMessage) DecodeMessage(data []byte) ([]byte, error) {
+func (e EndMessage) DecodeMessage(data []byte) ([]byte, error) {
 	return asn1.UnmarshalWithParams(data, e, "tag:4,application")
 }
 
-func (e *EndMessage) GetMessageType() MessageType {
+func (e EndMessage) GetMessageType() MessageType {
 	return End
 }
 
-func (a *AbortMessage) DecodeMessage(data []byte) ([]byte, error) {
+func (a AbortMessage) DecodeMessage(data []byte) ([]byte, error) {
 	return asn1.UnmarshalWithParams(data, a, "tag:7,application")
 }
 
-func (a *AbortMessage) GetMessageType() MessageType {
+func (a AbortMessage) GetMessageType() MessageType {
 	return Abort
 }

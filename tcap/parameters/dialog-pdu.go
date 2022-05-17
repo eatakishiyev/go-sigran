@@ -22,7 +22,7 @@ type DialogAbortPDU struct {
 	UserInformation []byte      `asn1:"tag:30,optional"`
 }
 
-func (d *DialogAbortPDU) GetDialogType() DialogPDUType {
+func (d DialogAbortPDU) GetDialogType() DialogPDUType {
 	return DialogAbortApdu
 }
 
@@ -36,7 +36,7 @@ type DialogRequestPDU struct {
 	UserInformation    []byte             `asn1:"tag:30,optional"`
 }
 
-func (d *DialogRequestPDU) GetDialogType() DialogPDUType {
+func (d DialogRequestPDU) GetDialogType() DialogPDUType {
 	return DialogRequestApdu
 }
 
@@ -52,6 +52,6 @@ type DialogResponsePDU struct {
 	UserInformation           []byte                    `asn1:"tag:30,optional"`
 }
 
-func (d *DialogResponsePDU) GetDialogType() DialogPDUType {
+func (d DialogResponsePDU) GetDialogType() DialogPDUType {
 	return DialogResponseApdu
 }

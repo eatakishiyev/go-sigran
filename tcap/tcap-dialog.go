@@ -51,8 +51,16 @@ func (d *TcapDialog) beginMessage(beginMessage *BeginMessage, callingParty *sccp
 		if dp.DialogPDU.GetDialogType() != tcap_parameters.DialogRequestApdu {
 			fmt.Printf("begin message unexpected dialog pdu received. expecting DialogRequestApdu but received %s",
 				dp.DialogPDU.GetDialogType())
-			//TODO implement send abort message
-			//sendAbortMessage()
+
+			abortPdu := tcap_parameters.DialogAbortPDU{
+				AbortSource: tcap_parameters.DialogServiceProvider,
+			}
+
+			dialogPortion := tcap_parameters.DialogPortion{
+				DialogPDU: &abortPdu,
+			}
+			dialogPortion.Encode()
+
 			return
 		}
 
@@ -62,8 +70,8 @@ func (d *TcapDialog) beginMessage(beginMessage *BeginMessage, callingParty *sccp
 
 func (d *TcapDialog) continueMessage(continueMessage *ContinueMessage, callingParty *sccp_parameters.SccpAddress,
 	calledParty *sccp_parameters.SccpAddress) {
-	//d.lock.Lock()
-	//defer d.lock.Unlock()
+	d.lock.Lock()
+	defer d.lock.Unlock()
 
 	if continueMessage.DialogPortion.FullBytes != nil &&
 		len(continueMessage.DialogPortion.FullBytes) > 0 {
