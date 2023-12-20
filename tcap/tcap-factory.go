@@ -1,41 +1,93 @@
 package tcap
 
 import (
-	"encoding/asn1"
 	"fmt"
+	"github.com/PromonLogicalis/asn1"
+	"go-sigtran/tcap/parameters"
+	"reflect"
 )
 
 type TcapMessageFactory struct {
 }
 
-func (tf TcapMessageFactory) DecodeTCAPMessage(data []byte) TCAPMessage {
-	var rawValue asn1.RawValue
-	_, err := asn1.Unmarshal(data, &rawValue)
-
+func Decode(data []byte, msg interface{}) {
+	ctx := asn1.NewContext()
+	ctx.SetDer(false, false)
+	err := ctx.AddChoice("message", []asn1.Choice{
+		{
+			Type:    reflect.TypeOf(BeginMessage{}),
+			Options: "tag:2,application",
+		},
+		{
+			Type:    reflect.TypeOf(EndMessage{}),
+			Options: "tag:4,application",
+		},
+		{
+			Type:    reflect.TypeOf(ContinueMessage{}),
+			Options: "tag:5,application",
+		},
+		{
+			Type:    reflect.TypeOf(AbortMessage{}),
+			Options: "tag:7,application",
+		},
+	})
 	if err != nil {
-		fmt.Printf("error occurred during decode TCAP message %s\n", err)
-		return nil
+		fmt.Println(err)
+		return
 	}
 
-	var tcapMessage TCAPMessage
-	switch rawValue.Tag {
-	case 2: //BeginMessage Message
-		tcapMessage = new(BeginMessage)
-		_, err := tcapMessage.DecodeMessage(data)
-
-		if err != nil {
-			fmt.Printf("error occurred during decode dialogPortion %s\n", err)
-		}
-	case 4: //End Message
-		tcapMessage = new(EndMessage)
-		tcapMessage.DecodeMessage(data)
-	case 5: //Continue Message
-		tcapMessage = new(ContinueMessage)
-		tcapMessage.DecodeMessage(data)
-	case 7: //Abort Message
-		tcapMessage = new(AbortMessage)
-		tcapMessage.DecodeMessage(data)
+	err = ctx.AddChoice("dialogPortion", []asn1.Choice{
+		{
+			Type:    reflect.TypeOf(parameters.DialogRequestPDU{}),
+			Options: "tag:0,application",
+		},
+		{
+			Type:    reflect.TypeOf(parameters.DialogResponsePDU{}),
+			Options: "tag:1,application",
+		},
+		{
+			Type:    reflect.TypeOf(parameters.DialogAbortPDU{}),
+			Options: "tag:4,application",
+		},
+	})
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
 
-	return tcapMessage
+	err = ctx.AddChoice("components", []asn1.Choice{
+		{
+			Type:    reflect.TypeOf(Invoke{}),
+			Options: "tag:1",
+		},
+		{
+			Type:    reflect.TypeOf(ReturnResultLast{}),
+			Options: "tag:2",
+		},
+	})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	err = ctx.AddChoice("associate-source-diagnostic", []asn1.Choice{
+		{
+			Type:    reflect.TypeOf(int(0)),
+			Options: "tag:1",
+		},
+		{
+			Type:    reflect.TypeOf(int(0)),
+			Options: "tag:2",
+		},
+	})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	_, err = ctx.DecodeWithOptions(data, msg, "choice:message")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }

@@ -1,8 +1,12 @@
 package tcap
 
 import (
-	"encoding/asn1"
+	"go-sigtran/tcap/parameters"
 )
+
+type TcMessage interface {
+	GetMessageType() MessageType
+}
 
 type MessageType uint
 
@@ -14,64 +18,51 @@ const (
 	Abort          MessageType = 7
 )
 
-type TCAPMessage interface {
-	DecodeMessage(data []byte) ([]byte, error)
-	GetMessageType() MessageType
-}
+// BeginMessage
 
 type BeginMessage struct {
-	OriginatingDialogId int64         `asn1:"tag:8,application"`
-	DialogPortion       asn1.RawValue `asn1:"tag:11,application,optional"`
-	Components          asn1.RawValue `asn1:"tag:12,application,optional"`
+	OriginatingTransactionId int64                    `asn1:"tag:8,application"`
+	DialogPortion            parameters.DialogPortion `asn1:"tag:11,application,optional"`
+	Components               ComponentPortion         `asn1:"tag:12,application,optional"`
 }
 
-type ContinueMessage struct {
-	OriginatingDialogId int           `asn1:"tag:8,application"`
-	DestinationDialogId int           `asn1:"tag:9,application"`
-	DialogPortion       asn1.RawValue `asn1:"tag:11,application,optional,explicit"`
-	Components          asn1.RawValue `asn1:"tag:12,application,optional,explicit"`
-}
-
-type EndMessage struct {
-	DestinationDialogId int           `asn1:"tag:9,application"`
-	DialogPortion       asn1.RawValue `asn1:"tag:11,application,optional,explicit"`
-	Components          asn1.RawValue `asn1:"tag:12,application,optional,explicit"`
-}
-
-type AbortMessage struct {
-	DestinationTransactionId int           `asn1:"tag:9,application"`
-	PAbortCause              int           `asn1:"tag:10,application,optional,explicit"`
-	UAbortCause              asn1.RawValue `asn1:"tag:11,application,optional,explicit"`
-}
-
-func (b BeginMessage) DecodeMessage(data []byte) ([]byte, error) {
-	return asn1.UnmarshalWithParams(data, b, "tag:2,application")
-}
-
-func (b BeginMessage) GetMessageType() MessageType {
+func (beginMessage *BeginMessage) GetMessageType() MessageType {
 	return Begin
 }
 
-func (c ContinueMessage) DecodeMessage(data []byte) ([]byte, error) {
-	return asn1.UnmarshalWithParams(data, c, "tag:5,application")
+// ContinueMessage
+
+type ContinueMessage struct {
+	OriginatingTransactionId int64                    `asn1:"tag:8,application"`
+	DestinationTransactionId int64                    `asn1:"tag:9,application"`
+	DialogPortion            parameters.DialogPortion `asn1:"tag:11,application,optional"`
+	Components               ComponentPortion         `asn1:"tag:12,application,optional,universal,set"`
 }
 
-func (c ContinueMessage) GetMessageType() MessageType {
+func (continueMessage *ContinueMessage) GetMessageType() MessageType {
 	return Continue
 }
 
-func (e EndMessage) DecodeMessage(data []byte) ([]byte, error) {
-	return asn1.UnmarshalWithParams(data, e, "tag:4,application")
+// EndMessage
+
+type EndMessage struct {
+	DestinationTransactionId int64                    `asn1:"tag:9,application"`
+	DialogPortion            parameters.DialogPortion `asn1:"tag:11,application,optional"`
+	Components               ComponentPortion         `asn1:"tag:12,application,optional"`
 }
 
-func (e EndMessage) GetMessageType() MessageType {
+func (endMessage *EndMessage) GetMessageType() MessageType {
 	return End
 }
 
-func (a AbortMessage) DecodeMessage(data []byte) ([]byte, error) {
-	return asn1.UnmarshalWithParams(data, a, "tag:7,application")
+// AbortMessage
+
+type AbortMessage struct {
+	DestinationTransactionId int64                  `asn1:"tag:9,application"`
+	PAbortCause              parameters.PAbortCause `asn1:"tag:10,application,optional"`
+	UAbortCauseBytes         []byte                 `asn1:"tag:11,application,optional"`
 }
 
-func (a AbortMessage) GetMessageType() MessageType {
+func (abortMessage *AbortMessage) GetMessageType() MessageType {
 	return Abort
 }

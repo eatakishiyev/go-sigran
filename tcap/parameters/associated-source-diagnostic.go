@@ -1,13 +1,5 @@
 package parameters
 
-type DialogueServiceUserDiagnostic struct {
-	Value ServiceUserDiagnostic
-}
-
-type DialogueServiceProviderDiagnostic struct {
-	Value ServiceProviderDiagnostic
-}
-
 type ServiceProviderDiagnostic int
 
 const (
@@ -25,5 +17,6 @@ const (
 )
 
 type AssociateSourceDiagnostic struct {
-	Diagnostic interface{} `asn1:"choice:associate-source-diagnostic"`
+	ServiceProviderDiagnostic ServiceProviderDiagnostic
+	ServiceUserDiagnostic     ServiceUserDiagnostic
 }

@@ -1,10 +1,9 @@
 package tcap
 
 import (
-	"fmt"
 	sccp_parameters "go-sigtran/sccp/parameters"
+	"go-sigtran/tcap/operations"
 	tcap_parameters "go-sigtran/tcap/parameters"
-
 	"sync"
 )
 
@@ -18,80 +17,128 @@ const (
 )
 
 type TcapDialog struct {
-	CallingParty   *sccp_parameters.SccpAddress
-	CalledParty    *sccp_parameters.SccpAddress
-	State          DialogState
-	lock           sync.Mutex
-	DialogId       int64
-	RemoteDialogId int64
-	localInitiated bool
+	CallingParty       *sccp_parameters.SccpAddress
+	CalledParty        *sccp_parameters.SccpAddress
+	State              DialogState
+	lock               sync.Mutex
+	DialogId           int
+	RemoteDialogId     int
+	localInitiated     bool
+	ApplicationContext *tcap_parameters.ApplicationContext
+	QoS                *tcap_parameters.QoS
+	TcapStack          *TcapStack
 }
 
-func (d *TcapDialog) beginMessage(beginMessage *BeginMessage, callingParty *sccp_parameters.SccpAddress,
+//func (dialog *TcapDialog) beginMessage(beginMessage *BeginMessage, callingParty *sccp_parameters.SccpAddress,
+//	calledParty *sccp_parameters.SccpAddress) {
+//	/* ITU Q.774 Page 12
+//	   * The receiving transaction sub-layer stores the received Originating Address as the destination address
+//	   for this transaction and its own address as the Originating Address (from memory or from the
+//	   destination address of the received N-UNITDATA indication primitive). The TC-user receives a
+//	   TC-BEGIN indication primitive containing the received Destination Address and Originating
+//	   Address.
+//	*/
+//	dialog.lock.Lock()
+//	defer dialog.lock.Unlock()
+//
+//	dialog.RemoteDialogId = beginMessage.OriginatingTransactionId
+//
+//	dialog.CallingParty = callingParty
+//	dialog.CalledParty = calledParty
+//
+//	if beginMessage.DialogPortionBytes != nil &&
+//		len(beginMessage.DialogPortionBytes) > 0 {
+//		dialogPortion := tcap_parameters.DialogPortion{}
+//		ok := dialogPortion.Decode(beginMessage.DialogPortionBytes)
+//
+//		if !ok || (ok && dialogPortion.DialogPDU.GetDialogPDUType() != tcap_parameters.RequestPDU) {
+//			//Send abort message
+//			abort := tcap_parameters.DialogAbortPDU{
+//				AbortSource: tcap_parameters.DialogServiceProvider,
+//			}
+//			dialogPortion = tcap_parameters.DialogPortion{
+//				DialogPDU: &abort,
+//				Oid:       DialogAsId(),
+//			}
+//			return
+//		}
+//
+//		dialogRequestPdu := dialogPortion.DialogPDU.(*tcap_parameters.DialogRequestPDU)
+//		if dialogRequestPdu.IsProtocolVersionCorrect() {
+//			dialog.ApplicationContext = dialogRequestPdu.ApplicationContext
+//			tcBeginIndication := primitives.TCBegin{
+//				ApplicationContext: dialog.ApplicationContext,
+//				TCAPDialog:         dialog,
+//				UserInformation:    dialogRequestPdu.GetUserInformationBytes(),
+//				Components:         processComponents(beginMessage.ComponentsBytes),
+//			}
+//			dialog.State = InitiationReceived
+//
+//			//dialog.TcapStack.OnBegin(tcBeginIndication)
+//		} else {
+//			//Protocol version is not correct. Abort message
+//			diagnostic := tcap_parameters.AssociateSourceDiagnostic{
+//				ServiceProviderDiagnostic: tcap_parameters.ProviderDiagnosticNoCommonDialogPortion,
+//			}
+//
+//			associateResult := tcap_parameters.AssociateResult{Result: tcap_parameters.RejectPermanent}
+//			dialogResponse := tcap_parameters.DialogResponsePDU{
+//				ApplicationContext:        dialogRequestPdu.ApplicationContext,
+//				AssociateResult:           &associateResult,
+//				AssociateSourceDiagnostic: &diagnostic,
+//			}
+//
+//			dialogPortion = tcap_parameters.DialogPortion{
+//				Oid:       DialogAsId(),
+//				DialogPDU: &dialogResponse,
+//			}
+//
+//			dialogPortionBytes := dialogPortion.Encode()
+//			abortMessage := AbortMessage{
+//				UAbortCauseBytes:         dialogPortionBytes,
+//				DestinationTransactionId: beginMessage.OriginatingTransactionId,
+//			}
+//
+//			//abortMessageBytes := abortMessage.Encode()
+//			//dialog.TcapStack.Send(callingParty, calledParty, dialog.QoS, abortMessageBytes)
+//		}
+//	} else {
+//		//tcBegin := primitives.TCBegin{
+//		//	TCAPDialog: dialog,
+//		//	Components: processComponents(beginMessage.ComponentsBytes),
+//		}
+//		dialog.State = InitiationReceived
+//		//dialog.TcapStack.OnBegin(tcBegin)
+//	}
+//}
+
+func (dialog *TcapDialog) continueMessage(continueMessage *ContinueMessage, callingParty *sccp_parameters.SccpAddress,
 	calledParty *sccp_parameters.SccpAddress) {
-	/* ITU Q.774 Page 12
-	   * The receiving transaction sub-layer stores the received Originating Address as the destination address
-	   for this transaction and its own address as the Originating Address (from memory or from the
-	   destination address of the received N-UNITDATA indication primitive). The TC-user receives a
-	   TC-BEGIN indication primitive containing the received Destination Address and Originating
-	   Address.
-	*/
-	d.lock.Lock()
-	defer d.lock.Unlock()
+	dialog.lock.Lock()
+	defer dialog.lock.Unlock()
 
-	d.RemoteDialogId = beginMessage.OriginatingDialogId
-
-	d.CallingParty = callingParty
-	d.CalledParty = calledParty
-
-	if beginMessage.DialogPortion.FullBytes != nil &&
-		len(beginMessage.DialogPortion.FullBytes) > 0 {
-		dp := tcap_parameters.DialogPortion{}
-		dp.Decode(beginMessage.DialogPortion.Bytes)
-		if dp.DialogPDU.GetDialogType() != tcap_parameters.DialogRequestApdu {
-			fmt.Printf("begin message unexpected dialog pdu received. expecting DialogRequestApdu but received %s",
-				dp.DialogPDU.GetDialogType())
-
-			abortPdu := tcap_parameters.DialogAbortPDU{
-				AbortSource: tcap_parameters.DialogServiceProvider,
-			}
-
-			dialogPortion := tcap_parameters.DialogPortion{
-				DialogPDU: &abortPdu,
-			}
-			dialogPortion.Encode()
-
-			return
-		}
-
-		d.State = InitiationReceived
-	}
+	//if continueMessage.DialogPortion != nil &&
+	//	len(continueMessage.DialogPortion) > 0 {
+	//	external, ok := tcap_parameters.DecodeExternal(continueMessage.DialogPortion)
+	//	dialogPortion, ok := tcap_parameters.DecodeDialogPortionFromExternal(external)
+	//
+	//	fmt.Printf("DialogPortion %s", dialogPortion)
+	//}
 }
 
-func (d *TcapDialog) continueMessage(continueMessage *ContinueMessage, callingParty *sccp_parameters.SccpAddress,
+func (dialog *TcapDialog) abortMessage(abortMessage *AbortMessage, callingParty *sccp_parameters.SccpAddress,
 	calledParty *sccp_parameters.SccpAddress) {
-	d.lock.Lock()
-	defer d.lock.Unlock()
-
-	if continueMessage.DialogPortion.FullBytes != nil &&
-		len(continueMessage.DialogPortion.FullBytes) > 0 {
-		dp := tcap_parameters.DialogPortion{}
-		dp.Decode(continueMessage.DialogPortion.Bytes)
-
-		if dp.DialogPDU.GetDialogType() != tcap_parameters.DialogResponseApdu {
-
-		}
-	}
+	//if abortMessage.UAbortCause != nil &&
+	//	len(abortMessage.UAbortCause) > 0 {
+	//	dp := tcap_parameters.DialogPortion{}
+	//	//dp.Decode(abortMessage.UAbortCause)
+	//
+	//	if dp.DialogPDU.GetDialogType() != tcap_parameters.DialogAbortApdu {
+	//
+	//	}
+	//}
 }
 
-func (d *TcapDialog) abortMessage(abortMessage *AbortMessage, party *sccp_parameters.SccpAddress, party2 *sccp_parameters.SccpAddress) {
-	if abortMessage.UAbortCause.FullBytes != nil &&
-		len(abortMessage.UAbortCause.FullBytes) > 0 {
-		dp := tcap_parameters.DialogPortion{}
-		dp.Decode(abortMessage.UAbortCause.Bytes)
-
-		if dp.DialogPDU.GetDialogType() != tcap_parameters.DialogAbortApdu {
-
-		}
-	}
+func processComponents(componentBytes []byte) []operations.Operations {
+	return nil
 }

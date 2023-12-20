@@ -2,8 +2,8 @@ package m3ua
 
 import (
 	"fmt"
-	"github.com/ishidawataru/sctp"
 	_ "github.com/ishidawataru/sctp"
+	sctp "github.com/ishidawataru/sctp"
 	"github.com/looplab/fsm"
 	"go-sigtran/m3ua/messages"
 	"go-sigtran/m3ua/messages/aspsm"

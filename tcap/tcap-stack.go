@@ -2,14 +2,13 @@ package tcap
 
 import (
 	"go-sigtran/sccp"
-	"go-sigtran/sccp/parameters"
+	sccpparameters "go-sigtran/sccp/parameters"
 	"math/rand"
 	"sync"
 	"time"
 )
 
 type TcapStack struct {
-	*TcapMessageFactory
 	Dialogs           map[int]*TcapDialog
 	TransactionIdPool []int
 	Name              string
@@ -30,59 +29,99 @@ func NewTcapStack(name string, minTransactionId int, maxTransactionId int, keepA
 		Name:              name,
 		TransactionIdPool: transactionIdPool,
 		KeepAliveTime:     keepAliveTimer,
+		Dialogs:           make(map[int]*TcapDialog),
 	}
 
 	return &tcapStack
 }
 
-func (ts *TcapStack) borrowTransactionId() int {
-	ts.mutex.Lock()
-	defer ts.mutex.Unlock()
-	if len(ts.TransactionIdPool) <= 0 {
+func (tcapStack *TcapStack) BorrowTransactionId() int {
+	tcapStack.mutex.Lock()
+	defer tcapStack.mutex.Unlock()
+	if len(tcapStack.TransactionIdPool) <= 0 {
 		return -1
 	}
-	trId := ts.TransactionIdPool[0]
-	ts.TransactionIdPool = ts.TransactionIdPool[1:]
+	trId := tcapStack.TransactionIdPool[0]
+	tcapStack.TransactionIdPool = tcapStack.TransactionIdPool[1:]
 	return trId
 }
 
-func (ts *TcapStack) releaseTransactionId(transactionId int) {
-	ts.mutex.Lock()
-	defer ts.mutex.Unlock()
-	ts.TransactionIdPool = append(ts.TransactionIdPool, transactionId)
+func (tcapStack *TcapStack) releaseTransactionId(transactionId int) {
+	tcapStack.mutex.Lock()
+	defer tcapStack.mutex.Unlock()
+	tcapStack.TransactionIdPool = append(tcapStack.TransactionIdPool, transactionId)
 }
 
-func (ts *TcapStack) OnMessage(calledParty *parameters.SccpAddress, callingParty *parameters.SccpAddress, userData []byte,
+func (tcapStack *TcapStack) OnMessage(calledParty *sccpparameters.SccpAddress, callingParty *sccpparameters.SccpAddress, userData []byte,
 	sequenceControl bool, sequenceNumber uint, messageHandling sccp.MessageHandling) {
-	message := TcapMessageFactory{}.DecodeTCAPMessage(userData)
-	messageType := message.GetMessageType()
-	switch messageType {
-	case Begin:
-		trId := ts.borrowTransactionId()
-		if trId < 0 {
-			//TODO implement free
-		}
-		tcapDialog := new(TcapDialog)
-		tcapDialog.beginMessage(message.(*BeginMessage), callingParty, calledParty)
-		ts.Dialogs[trId] = tcapDialog
-	case Continue:
-		continueMessage := message.(*ContinueMessage)
-		tcapDialog, ok := ts.Dialogs[continueMessage.DestinationDialogId]
-		if ok {
-			tcapDialog.continueMessage(continueMessage, callingParty, calledParty)
-		} else {
-			//TODO implement abort
-		}
-	case End:
-	case Abort:
-		abortMessage := message.(*AbortMessage)
-		tcapDialog := new(TcapDialog)
-		tcapDialog.abortMessage(abortMessage, callingParty, calledParty)
+	var tcapMessage interface{}
+	Decode(userData, &tcapMessage)
 
+	//qoS := &tcap_parameters.QoS{
+	//	MessageHandling: messageHandling,
+	//	SequenceControl: sequenceControl,
+	//	SequenceNumber:  sequenceNumber}
+
+	switch tcapMessage.(type) {
+	case BeginMessage:
+		println("BeginMessage")
+	case EndMessage:
+		println("EndMessage")
+	case ContinueMessage:
+		println("ContinueMessage")
+	case AbortMessage:
+		println("AbortMessage")
 	}
+	//switch MessageType(raw.Tag) {
+	//case Begin:
+	//	beginMessage := BeginMessage{}
+	//	_, err := asn1.UnmarshalWithParams(raw.FullBytes, &beginMessage, "tag:2,application,class:1")
+	//	fmt.Printf("%d", beginMessage.GetOriginatingTransactionId())
+	//	if err != nil {
+	//		fmt.Println(err)
+	//		return
+	//	}
+	//	trId := tcapStack.BorrowTransactionId()
+	//	if trId < 0 {
+	//		//TODO implement send abort message, out of resource
+	//	}
+	//	tcapDialog := new(TcapDialog)
+	//	tcapDialog.TcapStack = tcapStack
+	//	tcapDialog.QoS = qoS
+	//
+	//	tcapStack.Dialogs[trId] = tcapDialog
+	//	//tcapDialog.beginMessage(&beginMessage, callingParty, calledParty)
+	//	//case Continue:
+	//	//	continueMessage := tcapMessage.(ContinueMessage)
+	//	//	tcapDialog, ok := ts.Dialogs[continueMessage.DestinationTransactionId.Id]
+	//	//	if ok {
+	//	//		tcapDialog.TcapStack = ts
+	//	//		tcapDialog.QoS = qoS
+	//	//		tcapDialog.continueMessage(&continueMessage, callingParty, calledParty)
+	//	//	} else {
+	//	//		if continueMessage.OriginatingTransactionId != nil {
+	//	//			ts.sendTrPortionAbortMessage(continueMessage.OriginatingTransactionId, calledParty, callingParty,
+	//	//				tcapparameters.UnrecognizedTransactionId, qoS)
+	//	//		}
+	//	//	}
+	//	//case End:
+	//	//case Abort:
+	//	//	abortMessage := tcapMessage.(AbortMessage)
+	//	//	tcapDialog, ok := ts.Dialogs[abortMessage.DestinationTransactionId.Id]
+	//	//	if ok {
+	//	//		tcapDialog.abortMessage(&abortMessage, callingParty, calledParty)
+	//	//	}
+	//}
 }
 
-func (ts *TcapStack) OnNotice(calledParty *parameters.SccpAddress, callingParty *parameters.SccpAddress, userData []byte,
+func (tcapStack *TcapStack) OnNotice(calledParty *sccpparameters.SccpAddress, callingParty *sccpparameters.SccpAddress, userData []byte,
 	errorReason sccp.ErrorReason, importance uint) {
 
 }
+
+//func (ts *TcapStack) sendTrPortionAbortMessage(transactionId *tcapparameters.TransactionId, calledParty *sccpparameters.SccpAddress,
+//	callingParty *sccpparameters.SccpAddress, cause tcapparameters.PAbortCause, qoS *tcapparameters.QoS) {
+//	abortMessage := AbortMessage{DestinationTransactionId: transactionId,
+//		PAbortCause: tcapparameters.UnrecognizedTransactionId}
+//	ts.Send(callingParty, calledParty, qoS, abortMessage.Encode())
+//}

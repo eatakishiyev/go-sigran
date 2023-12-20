@@ -1,14 +1,11 @@
 package main
 
 import (
-	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-	"github.com/PromonLogicalis/asn1"
 	"go-sigtran/m3ua"
 	"go-sigtran/sccp"
 	"go-sigtran/tcap"
-	tcap_parameters "go-sigtran/tcap/parameters"
 	"os"
 	"os/signal"
 	"syscall"
@@ -29,40 +26,43 @@ func (q *Queue) Enqueue(e int) {
 	q.q = append(q.q, e)
 }
 
-func testEncodeDialogPortion() {
-
-	var h, _ = hex.DecodeString("9b139192")
-	var dialogId = binary.BigEndian.Uint64(h)
-
-	abortPdu := tcap_parameters.DialogAbortPDU{
-		AbortSource: tcap_parameters.DialogServiceProvider,
-	}
-
-	dialogPortion := tcap_parameters.DialogPortion{
-		DialogPDU: abortPdu,
-	}
-	var b = dialogPortion.Encode()
-	fmt.Printf("encoded dialog-portion %x\n", b)
-
-	var abortMessage = tcap.AbortMessage{
-		DestinationTransactionId: int(dialogId),
-	}
-
-	var abortData, err = asn1.EncodeWithOptions(abortMessage, "tag:7,application")
-	if err != nil {
-		fmt.Printf("error occurred during encode abort message %s", err)
-	} else {
-		fmt.Printf("abort message data %x", abortData)
-	}
-
-}
+//func testEncodeDialogPortion() {
+//
+//	var h, _ = hex.DecodeString("9b139192")
+//	var dialogId = binary.BigEndian.Uint32(h)
+//
+//	abortPdu := tcap_parameters.DialogAbortPDU{
+//		AbortSource: tcap_parameters.DialogServiceProvider,
+//	}
+//
+//	dialogPortion := tcap_parameters.DialogPortion{
+//		DialogPDU: abortPdu,
+//	}
+//	var b = dialogPortion.Encode()
+//	fmt.Printf("encoded dialog-portion %x\n", b)
+//
+//	var abortMessage = tcap.AbortMessage{
+//		DestinationTransactionId: int(dialogId),
+//	}
+//
+//	var abortData, err = asn1.EncodeWithOptions(abortMessage, "tag:7,application")
+//	if err != nil {
+//		fmt.Printf("error occurred during encode abort message %s", err)
+//	} else {
+//		fmt.Printf("abort message data %x", abortData)
+//	}
+//
+//}
 
 func main() {
-	testEncodeDialogPortion()
+	//testEncodeDialogPortion()
 
-	var tcapMessageData = "4b10280e060700118605010101a003800101"
-
-	data, err := hex.DecodeString(tcapMessageData)
+	//var messageBytes = "6281a34804a11003266b1e281c060700118605010101a011600f80020780a1090607040000010005036c80a177020101020116306f8006a105737457f28301008606a105498010f38705efcf2a0000aa0a0a0104040504038090a3ab04030204e0ad3ea03c303a06092a863a0089613a0100a42d3003810111300381010630038101073017810109a212020101040d09010a0a080413995440204453300381010a9001010000"
+	//var messageBytes = "65819a480482f403034904431001566c818ba12c02010202012e3024a01da01ba119810101a214a012800101810101820103830101840101850103a103800101a144020103020117303ca03a30068001048101003006800105810100300680010781010030068001fe810100300b800109810100a203800102300b800106810100be03810141a115020104020114300da00b0409029000995430477725"
+	//var messageBytes = "64144904bf1c06d16c0ca10a020104020116040282e6"
+	//var messageBytes = "654a480443100156490482f403036c3ca11b02010202012404138001018106327082010201a20381010183012ba11d0201030201183015800109a206a70480028090a303810101a403800100"
+	var messageBytes = "6581b24802047b4904070004006b2a2828060700118605010101a01d611b80020780a109060704000001003201a203020100a305a1030201006c7aa165020101020117305da05b300b800104810100a203800102300b800105810100a203800102300b800106810100a203800102300b800107810101a203800102300b800109810100a203800101300b800109810100a203800102300b80010a810101a203800101a1110201020201143009a00704050210792210"
+	data, err := hex.DecodeString(messageBytes)
 	if err != nil {
 		fmt.Printf("error occurred while decode hex-string %s", err)
 	}
