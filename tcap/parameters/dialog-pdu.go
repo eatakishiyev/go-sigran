@@ -63,8 +63,8 @@ func (dialogPdu *DialogRequestPDU) IsProtocolVersionCorrect() bool {
 type DialogResponsePDU struct {
 	ProtocolVersion           []byte                    `asn1:"tag:0,optional"`
 	ApplicationContext        ApplicationContext        `asn1:"tag:1"`
-	AssociateResult           int                       `asn1:"tag:2"`
-	AssociateSourceDiagnostic AssociateSourceDiagnostic `asn1:"tag:3,choice:associate-source-diagnostic"`
+	AssociateResult           AssociateResult           `asn1:"tag:2"`
+	AssociateSourceDiagnostic AssociateSourceDiagnostic `asn1:"tag:3"`
 	UserInformationBytes      []byte                    `asn1:"tag:30,optional"`
 }
 

@@ -72,12 +72,12 @@ func Decode(data []byte, msg interface{}) {
 
 	err = ctx.AddChoice("associate-source-diagnostic", []asn1.Choice{
 		{
-			Type:    reflect.TypeOf(int(0)),
-			Options: "tag:1",
+			Type:    reflect.TypeOf(parameters.ServiceProviderDiagnostic(0)),
+			Options: "tag:1,universal",
 		},
 		{
-			Type:    reflect.TypeOf(int(0)),
-			Options: "tag:2",
+			Type:    reflect.TypeOf(parameters.ServiceUserDiagnostic(0)),
+			Options: "tag:2,universal",
 		},
 	})
 	if err != nil {

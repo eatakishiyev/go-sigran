@@ -3,20 +3,31 @@ package parameters
 type ServiceProviderDiagnostic int
 
 const (
-	ProviderDiagnosticNull ServiceProviderDiagnostic = iota
-	ProviderDiagnosticNoReasonGiven
-	ProviderDiagnosticNoCommonDialogPortion
+	ProviderDiagnosticNull                  ServiceProviderDiagnostic = 0
+	ProviderDiagnosticNoReasonGiven         ServiceProviderDiagnostic = 1
+	ProviderDiagnosticNoCommonDialogPortion ServiceProviderDiagnostic = 2
 )
 
 type ServiceUserDiagnostic int
 
 const (
-	UserDiagnosticNull ServiceUserDiagnostic = iota
-	UserDiagnosticNoReasonGive
-	UserDiagnosticAcnNotSupported
+	UserDiagnosticNull            ServiceUserDiagnostic = 0
+	UserDiagnosticNoReasonGive    ServiceUserDiagnostic = 1
+	UserDiagnosticAcnNotSupported ServiceUserDiagnostic = 2
 )
 
 type AssociateSourceDiagnostic struct {
+	Diagnostic DiagnosticChoice `asn1:"tag:1"`
+}
+
+type DiagnosticChoice struct {
+	DiagnosticChoice interface{} `asn1:"choice:associate-source-diagnostic"`
+}
+
+type ServiceProviderAssociateSourceDiagnostic struct {
 	ServiceProviderDiagnostic ServiceProviderDiagnostic
-	ServiceUserDiagnostic     ServiceUserDiagnostic
+}
+
+type ServiceUserAssociateSourceDiagnostic struct {
+	ServiceUserDiagnostic ServiceUserDiagnostic
 }
